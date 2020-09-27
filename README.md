@@ -1,24 +1,8 @@
-# js-lib-boilerplate
-This is a boilerplate for developing JavaScript library.
+# asphalt.js
+An scene-based page transitions helper
+this is under development now
 
-## Tools
-module bundler: __Rollup__  
-transpiler: __Babel__  
-testing tool: __Jest__  
-linter: __ESLint__
-
-## Commands
-```
-# build
-$ npm run build
-
-# build and watch
-$ npm run dev
-
-# test
-$ npm run test
-
-# test coverage
-$ npm run test:cov
-```
-
+# TODO
+- [ ] cache
+- [ ] error handling
+- [ ] testing
