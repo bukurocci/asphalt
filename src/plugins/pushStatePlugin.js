@@ -3,13 +3,13 @@ import { createPlugin } from '../createPlugin';
 const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
   const beforeEnter = async(payload) => {
     const { errors, value } = payload;
-    const { urlProps } = value;
+    const { urlProps, firstRun, shouldPushState } = value;
 
     if(errors) {
       return error(value);
     }
 
-    if(payload.shouldPushState) {
+    if(shouldPushState) {
       history.pushState(null, null, urlProps.href);
     }
 
