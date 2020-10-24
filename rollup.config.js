@@ -20,6 +20,7 @@ const config = [
     output: {
       file: 'dist/index.js',
       format: 'umd',
+      name: pkg.name,
       banner
     },
     external: [...Object.keys(pkg.peerDependencies || {})],
