@@ -9,4 +9,4 @@ export { createProcess } from './createProcess';
 export { createEmptyPayload, createPayloadFactory } from './payload';
 export { ok, error } from './result';
 export { fetchHTMLProcess } from './process';
-export { pushStatePlugin, firstRunPlugin, logTransitionPlugin } from './plugins';
+export { pushStatePlugin, firstRunPlugin, transitionLogPlugin } from './plugins';
