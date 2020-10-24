@@ -8,7 +8,7 @@ const defaultOptions = {
 };
 
 const fetchHTML = (href, option, { ok, error }) => {
-  return async(payload) => {
+  return async (payload) => {
     const { errors, value } = payload;
 
     if (errors) {

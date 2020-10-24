@@ -1,7 +1,6 @@
-import { ok } from "./result";
+import { ok } from './result';
 
 export const createPayloadFactory = (routingContext = {}) => {
-
   Object.freeze(routingContext);
 
   return (result = ok({}), session = {}) => {
@@ -20,5 +19,5 @@ export const createPayloadFactory = (routingContext = {}) => {
 const emptyPayload = createPayloadFactory({})();
 
 export const createEmptyPayload = () => {
- return Object.assign({}, emptyPayload);
+  return Object.assign({}, emptyPayload);
 };

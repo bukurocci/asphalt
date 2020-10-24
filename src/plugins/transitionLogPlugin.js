@@ -1,4 +1,4 @@
-import { createPlugin } from "../createPlugin";
+import { createPlugin } from '../createPlugin';
 
 const transitionLogPlugin = createPlugin('transitionLogPlugin', (handler) => {
   const beforeEnter = (payload) => {
@@ -7,7 +7,7 @@ const transitionLogPlugin = createPlugin('transitionLogPlugin', (handler) => {
     console.info(`Asphalt: [INFO] start entering ${name} scene`);
 
     return payload.errors ? handler.error(payload.value) : handler.ok(payload.value);
-  }
+  };
 
   const afterEnter = (payload) => {
     const name = payload.routingContext.name;
@@ -17,14 +17,13 @@ const transitionLogPlugin = createPlugin('transitionLogPlugin', (handler) => {
     context.name = name;
 
     return payload.errors ? handler.error(payload.value) : handler.ok(payload.value);
-  }
+  };
 
   const beforeLeave = (payload) => {
-
     console.info(`Asphalt: [INFO] start leaving ${context.name} scene`);
 
     return payload.errors ? handler.error(payload.value) : handler.ok(payload.value);
-  }
+  };
 
   const afterLeave = (payload) => {
     console.info(`Asphalt: [INFO] finish leaving ${context.name} scene`);
@@ -32,13 +31,12 @@ const transitionLogPlugin = createPlugin('transitionLogPlugin', (handler) => {
     return payload.errors ? handler.error(payload.value) : handler.ok(payload.value);
   };
 
-
   const initialize = () => {
     const name = '';
 
     return {
       name
-    }
+    };
   };
 
   const context = initialize();
@@ -48,7 +46,7 @@ const transitionLogPlugin = createPlugin('transitionLogPlugin', (handler) => {
     afterEnter,
     beforeLeave,
     afterLeave
-  }
+  };
 });
 
 export { transitionLogPlugin };

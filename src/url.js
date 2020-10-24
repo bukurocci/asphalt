@@ -26,7 +26,6 @@ const normalizePathname = (pathname) => {
 };
 
 export const decomposeURL = (url) => {
-
   // IE11でtrainling slashなしのURLの入ったa要素を参照するとなぜか一部のプロパティ（hostなど）が空になるバグがある模様
   // a要素を作ってhrefを入れると期待した動作になる。
   const a = document.createElement('a');
@@ -46,7 +45,7 @@ export const decomposeURL = (url) => {
     // 上記のように作ったa要素から取得した、pathnameはIE11で / で開始でなくなっているのでその場合足す
     pathname: normalizePathname(pathname),
     search,
-    hash,
+    hash
   };
 };
 
@@ -54,5 +53,7 @@ export const isSameOrigin = (url1, url2) => {
   const url1Props = decomposeURL(url1);
   const url2Props = decomposeURL(url2);
 
-  return url1Props.protocol === url2Props.protocol && url1Props.host === url2Props.host && url1Props.port === url2Props.port
+  return (
+    url1Props.protocol === url2Props.protocol && url1Props.host === url2Props.host && url1Props.port === url2Props.port
+  );
 };

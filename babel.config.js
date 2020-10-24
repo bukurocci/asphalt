@@ -1,20 +1,21 @@
-const { NODE_ENV } = process.env
+const { NODE_ENV } = process.env;
 
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
 
   const presets = [
-    ['@babel/preset-env', {
-      modules: false,
-      loose: true
-    }]
+    [
+      '@babel/preset-env',
+      {
+        modules: false,
+        loose: true
+      }
+    ]
   ];
-  const plugins = [
-    NODE_ENV === 'test' && '@babel/transform-modules-commonjs'
-  ].filter(Boolean);
+  const plugins = [NODE_ENV === 'test' && '@babel/transform-modules-commonjs'].filter(Boolean);
 
   return {
     presets,
     plugins
-  }
-}
+  };
+};

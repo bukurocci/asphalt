@@ -1,7 +1,7 @@
 import { createPlugin } from '../createPlugin';
 
 const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
-  const beforeEnter = async(payload) => {
+  const beforeEnter = async (payload) => {
     const { errors, value } = payload;
     const { urlProps, shouldPushState } = payload.routingContext;
 
@@ -16,7 +16,7 @@ const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
     return ok(value);
   };
 
-  const afterEnter = async(payload) => {
+  const afterEnter = async (payload) => {
     const { errors, value } = payload;
     const { urlProps } = payload.routingContext;
 

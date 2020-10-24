@@ -3,7 +3,7 @@ import { createRouter } from './router';
 import { createScheduler } from './scheduler';
 import { createPluginRegistry } from './pluginRegistory';
 import queryString from 'query-string';
-import warningNoDefault from "./scene/warningNoDefault";
+import warningNoDefault from './scene/warningNoDefault';
 
 const defaultOptions = {
   ignoreClassName: 'no-pjax',
@@ -58,19 +58,20 @@ const createContext = (userOptions) => {
     // href="#" の時はhashの違いは無くなるがhrefには違いが現れる
     const emptyHash = diffProps.length === 1 && diffProps[0] === 'href';
 
-    if(options.ignoreHash && (hashOnly || emptyHash)) {
+    if (options.ignoreHash && (hashOnly || emptyHash)) {
       return false;
     }
 
-
-    if(toProps.pathname.indexOf(options.baseDir) !== 0) {
+    if (toProps.pathname.indexOf(options.baseDir) !== 0) {
       return false;
     }
 
-    return isSameOrigin(fromProps.href, toProps.href) // 同一オリジンのチェック
-      && options.denyDispatchRule.every((rule) => rule(fromProps, toProps, target)) // ユーザーが定義した無視条件のチェック
-      && (target == null || isImplicitQualifiedTarget(target)); // aタグのclickイベントから実行しようとしている場合はaタグをチェック
-  }
+    return (
+      isSameOrigin(fromProps.href, toProps.href) && // 同一オリジンのチェック
+      options.denyDispatchRule.every((rule) => rule(fromProps, toProps, target)) && // ユーザーが定義した無視条件のチェック
+      (target == null || isImplicitQualifiedTarget(target))
+    ); // aタグのclickイベントから実行しようとしている場合はaタグをチェック
+  };
 
   const handlePopState = (evt) => {
     if (!evt.state) {
@@ -96,7 +97,7 @@ const createContext = (userOptions) => {
   const handleClick = (evt) => {
     const target = evt.target.closest('a');
 
-    if(!target) {
+    if (!target) {
       return;
     }
 
@@ -110,7 +111,7 @@ const createContext = (userOptions) => {
     evt.preventDefault();
 
     // 遷移先と現在地が同じ場合はページ移動をキャンセルして何もしない
-    if(toProps.href === fromProps.href) {
+    if (toProps.href === fromProps.href) {
       return;
     }
 
@@ -189,8 +190,8 @@ const createContext = (userOptions) => {
   };
 
   const registerDefault = (sceneFactory) => {
-    context.defaultSceneFactory = sceneFactory
-  }
+    context.defaultSceneFactory = sceneFactory;
+  };
 
   const destroy = () => {
     unbindEvents();
