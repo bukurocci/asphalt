@@ -5,33 +5,20 @@
     "es6": true,
     "jest/globals": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier",
-    "jest"
-  ],
+  "extends": ["eslint:recommended", "prettier"],
+  "plugins": ["jest"],
   "parserOptions": {
     "parser": "babel-eslint",
-    "ecmaVersion": 2018,
+    "ecmaVersion": 2021,
     "sourceType": "module"
   },
   "root": true,
   "rules": {
-    "prettier/prettier": "error",
     "strict": ["warn"],
     "no-var": "warn",
     "no-unused-vars": ["error", { "args": "none", "caughtErrors": "none", "ignoreRestSiblings": true }],
     "no-console": ["warn", { "allow": ["info", "warn", "error"] }],
-    "no-tabs": "warn",
     "no-multiple-empty-lines": "error",
-    "no-trailing-spaces": "error",
-    "quotes": ["warn", "single"],
-    "object-curly-spacing": ["error", "always"],
-    "array-bracket-spacing": ["error", "never"],
-    "space-before-function-paren": ["error", "never"]
+    "no-trailing-spaces": "error"
   }
 }
