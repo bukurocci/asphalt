@@ -1,4 +1,3 @@
-
 const normalizeHost = (host) => {
   const parts = host.split(':');
 
@@ -19,22 +18,25 @@ const normalizeHost = (host) => {
 };
 
 const normalizePathname = (pathname) => {
-  if(pathname.charAt(0) !== '/') {
+  if (pathname.charAt(0) !== '/') {
     return '/' + pathname;
   }
 
   return pathname;
 };
 
-const decomposeURL = url => {
+export const decomposeURL = (url) => {
+
   // IE11でtrainling slashなしのURLの入ったa要素を参照するとなぜか一部のプロパティ（hostなど）が空になるバグがある模様
   // a要素を作ってhrefを入れると期待した動作になる。
   const a = document.createElement('a');
   a.setAttribute('href', url);
 
-  const { href, protocol, hostname, host, port, pathname, search, hash, origin } = a;
+  // origin も含めたいところだがIE11が未対応
+  // https://developer.mozilla.org/ja/docs/Web/API/HTMLHyperlinkElementUtils
+  const { href, protocol, hostname, host, port, pathname, search, hash } = a;
 
-  const props = {
+  return {
     href,
     protocol,
     // IEは80（http）や443（https）のデフォルトport番号が a.host についてきてしまうので処理する。
@@ -45,11 +47,12 @@ const decomposeURL = url => {
     pathname: normalizePathname(pathname),
     search,
     hash,
-    origin
   };
-
-  return props;
 };
 
+export const isSameOrigin = (url1, url2) => {
+  const url1Props = decomposeURL(url1);
+  const url2Props = decomposeURL(url2);
 
-export { decomposeURL };
+  return url1Props.protocol === url2Props.protocol && url1Props.host === url2Props.host && url1Props.port === url2Props.port
+};

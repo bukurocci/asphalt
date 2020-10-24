@@ -1,17 +1,18 @@
 const noopHook = () => [];
 const defaultHooks = {
   enter: noopHook,
+  errorEnter: noopHook,
   leave: noopHook,
-  error: noopHook
+  errorLeave: noopHook
 };
 
 const filterHooksFromOption = (options) => {
-  const hookTypes = ['enter', 'leave', 'error'];
+  const hookTypes = ['enter', 'errorEnter', 'leave', 'errorLeave'];
 
   return Object.keys(options)
-    .filter(key => hookTypes.includes(key))
+    .filter((key) => hookTypes.includes(key))
     .reduce((hooks, hookType) => {
-      if(typeof options[hookType] === 'function') {
+      if (typeof options[hookType] === 'function') {
         hooks[hookType] = options[hookType];
       }
 
@@ -19,8 +20,7 @@ const filterHooksFromOption = (options) => {
     }, {});
 };
 
-const defineScene = (options = {}) => {
-
+const defineScene = (name, options = {}) => {
   const initialize = () => {
     const hooks = Object.assign({}, defaultHooks, filterHooksFromOption(options));
 
@@ -32,26 +32,32 @@ const defineScene = (options = {}) => {
   const { hooks } = initialize();
 
   return () => {
-
     const enter = (payload) => {
       return hooks.enter(payload) || [];
+    };
+
+    const errorEnter = (payload) => {
+      return hooks.errorEnter(payload) || [];
     };
 
     const leave = (payload) => {
       return hooks.leave(payload) || [];
     };
 
-    const error = (payload) => {
-      return hooks.error(payload) || [];
+    const errorLeave = (payload) => {
+      return hooks.errorLeave(payload) || [];
     };
 
     return {
+      get name() {
+        return name;
+      },
       enter,
       leave,
-      error
-    }
+      errorEnter,
+      errorLeave
+    };
   };
 };
-
 
 export { defineScene };

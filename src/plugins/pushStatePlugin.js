@@ -3,13 +3,13 @@ import { createPlugin } from '../createPlugin';
 const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
   const beforeEnter = async(payload) => {
     const { errors, value } = payload;
-    const { urlProps, firstRun, shouldPushState } = value;
+    const { urlProps, shouldPushState } = payload.routingContext;
 
-    if(errors) {
+    if (errors) {
       return error(value);
     }
 
-    if(shouldPushState) {
+    if (shouldPushState) {
       history.pushState(null, null, urlProps.href);
     }
 
@@ -18,9 +18,9 @@ const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
 
   const afterEnter = async(payload) => {
     const { errors, value } = payload;
-    const { urlProps } = value;
+    const { urlProps } = payload.routingContext;
 
-    if(errors) {
+    if (errors) {
       return error(value);
     }
 
@@ -32,7 +32,7 @@ const pushStatePlugin = createPlugin('pushState', ({ ok, error }) => {
   return {
     beforeEnter,
     afterEnter
-  }
+  };
 });
 
 export { pushStatePlugin };

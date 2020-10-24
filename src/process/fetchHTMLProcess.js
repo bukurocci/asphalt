@@ -17,22 +17,20 @@ const fetchHTML = (href, option, { ok, error }) => {
 
     const options = Object.assign({}, defaultOptions, option);
     return await fetch(href, options)
-      .then(data => {
-        return data.text().then(text => {
+      .then((data) => {
+        return data.text().then((text) => {
           const domParser = new DOMParser();
           const htmlDOM = domParser.parseFromString(text, 'text/html');
 
           return ok(Object.assign(payload.value, { htmlDOM }));
         });
       })
-      .catch(e => error(e));
-  }
+      .catch((e) => error(e));
+  };
 };
 
-const fetchHTMLProcess = createProcess(processHandler => {
-  return (href, options = {}) => fetchHTML(href, options, processHandler);
+const fetchHTMLProcess = createProcess((handlers) => {
+  return (href, options = {}) => fetchHTML(href, options, handlers);
 });
 
 export { fetchHTMLProcess };
-
-

@@ -1,8 +1,6 @@
 import { createPlugin } from '../createPlugin';
 
-
 const firstRunPlugin = createPlugin('firstRunPlugin', ({ ok, error }) => {
-
   const beforeEnter = (payload) => {
     const { errors, value } = payload;
 
@@ -34,7 +32,7 @@ const firstRunPlugin = createPlugin('firstRunPlugin', ({ ok, error }) => {
       state: {
         firstRun
       }
-    }
+    };
   };
 
   const { state } = initialize();
@@ -42,7 +40,7 @@ const firstRunPlugin = createPlugin('firstRunPlugin', ({ ok, error }) => {
   return {
     beforeEnter,
     beforeLeave
-  }
+  };
 });
 
-export { firstRunPlugin }
+export { firstRunPlugin };

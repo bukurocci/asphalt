@@ -1,4 +1,3 @@
-
 class LogBuffer {
   get size() {
     return this._buffer.length;
@@ -69,6 +68,6 @@ class LogBuffer {
 
 const createCache = (size) => {
   return new LogBuffer(size);
-}
+};
 
 export { createCache };

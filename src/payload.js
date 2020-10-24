@@ -1,49 +1,24 @@
+import { ok } from "./result";
 
-class Result {
+export const createPayloadFactory = (routingContext = {}) => {
 
-  get isError() {
-    return this._left != null;
-  }
+  Object.freeze(routingContext);
 
-  get isOk() {
-    return this._right != null;
-  }
+  return (result = ok({}), session = {}) => {
+    const errors = result.isError;
+    const value = result.value;
 
-  get value() {
-    return this.isOk ? this._right : this._left;
-  }
-
-  constructor(error, ok) {
-    this._left = error;
-    this._right = ok;
-  }
-
-  static ok(value) {
-    return new Result(null, value);
-  }
-
-  static error(e) {
-    return new Result(e, null);
-  }
-}
-
-
-const ok = (value) => {
-  return Result.ok(value);
-};
-
-const error = (error) => {
-  return Result.error(error);
-};
-
-const createPayloadFromResult = (either) => {
-  const errors = either.isError;
-  const value = either.value;
-
-  return {
-    errors,
-    value
+    return {
+      errors,
+      value,
+      session,
+      routingContext
+    };
   };
 };
 
-export { ok, error, createPayloadFromResult };
+const emptyPayload = createPayloadFactory({})();
+
+export const createEmptyPayload = () => {
+ return Object.assign({}, emptyPayload);
+};
