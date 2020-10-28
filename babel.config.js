@@ -13,9 +13,24 @@ module.exports = function (api) {
     ]
   ];
   const plugins = [NODE_ENV === 'test' && '@babel/transform-modules-commonjs'].filter(Boolean);
+  const env = {
+    test: {
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            targets: {
+              node: 'current'
+            }
+          }
+        ]
+      ]
+    }
+  };
 
   return {
     presets,
+    env,
     plugins
   };
 };
