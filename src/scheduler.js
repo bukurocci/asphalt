@@ -61,7 +61,7 @@ const createScheduler = (options) => {
       );
 
       // 退出処理が完了した時にエラーが残っていたら異常系のトランジションを行う
-      if (state.payload.error) {
+      if (state.payload.errors) {
         state.payload = Object.assign(
           {},
           state.payload,
@@ -107,16 +107,16 @@ const createScheduler = (options) => {
     );
 
     // 入場処理が完了した時にエラーが残っていたら異常系のトランジションを行う
-    if (state.payload.error) {
+    if (state.payload.errors) {
       state.payload = Object.assign(
         {},
         state.payload,
-        await resolveHook('beforeErrorEnter', plugins.findProcesses('beforeEnterError'), state.payload, routingContext)
+        await resolveHook('beforeErrorEnter', plugins.findProcesses('beforeErrorEnter'), state.payload, routingContext)
       );
       state.payload = Object.assign(
         {},
         state.payload,
-        await resolveHook('errorEnter', departed.errorEnter(state.payload), state.payload, routingContext)
+        await resolveHook('errorEnter', destined.errorEnter(state.payload), state.payload, routingContext)
       );
       state.payload = Object.assign(
         {},
