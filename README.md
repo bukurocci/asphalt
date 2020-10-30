@@ -1,9 +1,8 @@
 # asphalt.js
-An scene-based page transitions helper  
+An scene-based transitions helper  
 this is under development now
 
 # TODO
-- [ ] cache
-- [ ] error handling
-- [ ] testing
-- [ ] document
+- [x] Unit testing
+- [x] Way to handle an error
+- [ ] Document
