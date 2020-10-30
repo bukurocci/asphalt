@@ -30,6 +30,7 @@ const createContext = (userOptions) => {
     const plugins = createPluginRegistry();
     const scheduler = createScheduler();
     const running = false;
+    const destroyed = false;
     const queuedURLState = null;
     const here = null;
     const defaultSceneFactory = warningNoDefault;
@@ -42,7 +43,8 @@ const createContext = (userOptions) => {
       state: {
         here,
         queuedURLState,
-        running
+        running,
+        destroyed
       }
     };
   };
@@ -139,9 +141,14 @@ const createContext = (userOptions) => {
   };
 
   const run = (href) => {
-    if (state.running) {
-      return;
+    if (state.destroyed) {
+      throw new Error('this context already destroyed. the context cannot be reuse');
     }
+
+    if (state.running) {
+      throw new Error('this context is already running');
+    }
+
     state.running = true;
 
     bindEvents();
@@ -150,7 +157,7 @@ const createContext = (userOptions) => {
   };
 
   const dispatch = (props, usePushState = true) => {
-    if (scheduler.busy) {
+    if (scheduler.busy || state.destroyed) {
       return;
     }
 
@@ -184,6 +191,10 @@ const createContext = (userOptions) => {
   };
 
   const manuallyDispatch = (href) => {
+    if (state.destroyed) {
+      throw new Error('cannot dispatch if this context is destroyed');
+    }
+
     const fromProps = state.here;
     const toProps = decomposeURL(href);
 
@@ -205,6 +216,8 @@ const createContext = (userOptions) => {
 
   const destroy = () => {
     unbindEvents();
+
+    state.destroyed = true;
   };
 
   const context = initialize();
