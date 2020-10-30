@@ -20,21 +20,21 @@ describe('basic transition', () => {
     await transition.run(location.href);
 
     expect(mockEnter).toHaveBeenCalledTimes(1);
+
+    transition.destroy();
   });
 
   test('from the second run via click', async (done) => {
     const transition = asphalt.createContext();
+
     const mockEnter1 = jest.fn((payload) => []);
     const mockLeave1 = jest.fn((payload) => []);
     const mockEnter2 = jest.fn((payload) => {
-      expect(mockEnter1).toHaveBeenCalledTimes(1);
-      expect(mockLeave1).toHaveBeenCalledTimes(1);
-      expect(mockEnter2).toHaveBeenCalledTimes(1);
-      expect(mockLeave2).toHaveBeenCalledTimes(0);
-      done();
+      test();
       return [];
     });
     const mockLeave2 = jest.fn((payload) => []);
+
     const scene = asphalt.defineScene('test', {
       enter: mockEnter1,
       leave: mockLeave1
@@ -43,6 +43,16 @@ describe('basic transition', () => {
       enter: mockEnter2,
       leave: mockLeave2
     });
+
+    const test = () => {
+      expect(mockEnter1).toHaveBeenCalledTimes(1);
+      expect(mockLeave1).toHaveBeenCalledTimes(1);
+      expect(mockEnter2).toHaveBeenCalledTimes(1);
+      expect(mockLeave2).toHaveBeenCalledTimes(0);
+      transition.destroy();
+      done();
+    };
+
     transition.registerScene('/', scene);
     transition.registerScene('/path/to/index2.html', scene2);
 
@@ -60,6 +70,7 @@ describe('basic transition', () => {
 
   test('from the second run via manual dispatching', async () => {
     const transition = asphalt.createContext();
+
     const mockEnter1 = jest.fn((payload) => []);
     const mockLeave1 = jest.fn((payload) => []);
     const mockEnter2 = jest.fn((payload) => []);
@@ -73,6 +84,7 @@ describe('basic transition', () => {
       enter: mockEnter2,
       leave: mockLeave2
     });
+
     transition.registerScene('/', scene);
     transition.registerScene('/path/to/index2.html', scene2);
 
@@ -83,6 +95,21 @@ describe('basic transition', () => {
     expect(mockLeave1).toHaveBeenCalledTimes(1);
     expect(mockEnter2).toHaveBeenCalledTimes(1);
     expect(mockLeave2).toHaveBeenCalledTimes(0);
+
+    transition.destroy();
+  });
+
+  test('cannot exec `run` method twice', async () => {
+    const transition = asphalt.createContext();
+    transition.default(asphalt.defineScene('test', {}));
+
+    await transition.run(location.href);
+
+    expect(() => {
+      transition.run(location.href);
+    }).toThrow();
+
+    transition.destroy();
   });
 
   afterEach(() => {
@@ -106,7 +133,9 @@ describe('user option', () => {
     const transition = asphalt.createContext({
       ignoreClassName: 'no-pjax-test'
     });
+
     const mockLeave = jest.fn((payload) => []);
+
     const scene = asphalt.defineScene('test', {
       leave: mockLeave
     });
@@ -128,10 +157,11 @@ describe('user option', () => {
         cancelable: true
       })
     );
+    a.removeEventListener('click', clickHandler);
 
     setTimeout(() => {
-      a.removeEventListener('click', clickHandler);
       expect(mockLeave).toHaveBeenCalledTimes(0);
+      transition.destroy();
       done();
     }, 1000);
   });
@@ -140,7 +170,9 @@ describe('user option', () => {
     const transition = asphalt.createContext({
       baseDir: '/path/to/'
     });
+
     const mockLeave = jest.fn((payload) => []);
+
     const scene = asphalt.defineScene('test', {
       leave: mockLeave
     });
@@ -160,10 +192,12 @@ describe('user option', () => {
         cancelable: true
       })
     );
+    a.removeEventListener('click', clickHandler);
 
     setTimeout(() => {
-      a.removeEventListener('click', clickHandler);
       expect(mockLeave).toHaveBeenCalledTimes(0);
+      transition.destroy();
+
       done();
     }, 1000);
   });
@@ -184,6 +218,7 @@ describe('user option', () => {
 
     setTimeout(() => {
       expect(mockLeave).toHaveBeenCalledTimes(0);
+      transition.destroy();
       done();
     }, 1000);
   });
@@ -206,6 +241,8 @@ describe('user option', () => {
 
     expect(mockEnter).toHaveBeenCalledTimes(1);
     expect(mockLeave).toHaveBeenCalledTimes(0);
+
+    transition.destroy();
   });
 
   test('should dispatch via hash change when ignoreHash option is false', async () => {
@@ -234,6 +271,8 @@ describe('user option', () => {
 
     expect(mockEnter).toHaveBeenCalledTimes(2);
     expect(mockLeave).toHaveBeenCalledTimes(1);
+
+    transition.destroy();
   });
 
   test('should respect the denyDispatchRule option', async () => {
@@ -280,25 +319,8 @@ describe('user option', () => {
 
     expect(mockEnter).toHaveBeenCalledTimes(2);
     expect(mockLeave).toHaveBeenCalledTimes(1);
-  });
 
-  test('should warn if context has no default scene and goes unknown destination', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation((x) => x);
-    const transition = asphalt.createContext();
-    const mockEnter = jest.fn((payload) => []);
-    const mockLeave = jest.fn((payload) => []);
-    const scene = asphalt.defineScene('test', {
-      enter: mockEnter,
-      leave: mockLeave
-    });
-    transition.registerScene('/', scene);
-
-    await transition.run(location.href);
-    await transition.dispatch('/path/to/');
-
-    expect(warnSpy.mock.calls.length).toBe(1);
-    expect(mockEnter).toHaveBeenCalledTimes(1);
-    expect(mockLeave).toHaveBeenCalledTimes(1);
+    transition.destroy();
   });
 
   afterEach(() => {
@@ -333,6 +355,8 @@ describe('implicit rules', () => {
 
     expect(mockEnter).toHaveBeenCalledTimes(1);
     expect(mockLeave).toHaveBeenCalledTimes(0);
+
+    transition.destroy();
   });
 
   test('should ignore if <a>\'s target attribute is "_blank"', async (done) => {
@@ -340,6 +364,7 @@ describe('implicit rules', () => {
 
     const mockEnter = jest.fn((payload) => []);
     const mockLeave = jest.fn((payload) => []);
+
     transition.default(
       asphalt.defineScene('test', {
         enter: mockEnter,
@@ -354,18 +379,19 @@ describe('implicit rules', () => {
       evt.preventDefault();
     };
     a.addEventListener('click', clickHandler);
-
     a.dispatchEvent(
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true
       })
     );
+    a.removeEventListener('click', clickHandler);
 
     setTimeout(() => {
-      a.removeEventListener('click', clickHandler);
       expect(mockEnter).toHaveBeenCalledTimes(1);
       expect(mockLeave).toHaveBeenCalledTimes(0);
+      transition.destroy();
+
       done();
     }, 1000);
   });
@@ -389,18 +415,18 @@ describe('implicit rules', () => {
       evt.preventDefault();
     };
     a.addEventListener('click', clickHandler);
-
     a.dispatchEvent(
       new MouseEvent('click', {
         bubbles: true,
         cancelable: true
       })
     );
+    a.removeEventListener('click', clickHandler);
 
     setTimeout(() => {
-      a.removeEventListener('click', clickHandler);
       expect(mockEnter).toHaveBeenCalledTimes(1);
       expect(mockLeave).toHaveBeenCalledTimes(0);
+      transition.destroy();
       done();
     }, 1000);
   });
@@ -410,21 +436,175 @@ describe('implicit rules', () => {
   });
 });
 
-test('can register the default scene', async () => {
-  const transition = asphalt.createContext();
-  const mockEnter = jest.fn((payload) => []);
-  const mockLeave = jest.fn((payload) => []);
+describe('default scene', () => {
+  test('can register the default scene', async () => {
+    const transition = asphalt.createContext();
+    const mockEnter = jest.fn((payload) => []);
+    const mockLeave = jest.fn((payload) => []);
 
-  transition.default(
-    asphalt.defineScene('test', {
+    transition.default(
+      asphalt.defineScene('test', {
+        enter: mockEnter,
+        leave: mockLeave
+      })
+    );
+
+    await transition.run(location.href);
+    await transition.dispatch('/path/to/');
+
+    expect(mockEnter).toHaveBeenCalledTimes(2);
+    expect(mockLeave).toHaveBeenCalledTimes(1);
+
+    transition.destroy();
+  });
+
+  test('should warn if context has no default scene and goes unknown destination', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation((x) => x);
+
+    const transition = asphalt.createContext();
+
+    const mockEnter = jest.fn((payload) => []);
+    const mockLeave = jest.fn((payload) => []);
+
+    const scene = asphalt.defineScene('test', {
       enter: mockEnter,
       leave: mockLeave
-    })
-  );
+    });
 
-  await transition.run(location.href);
-  await transition.dispatch('/path/to/');
+    transition.registerScene('/', scene);
 
-  expect(mockEnter).toHaveBeenCalledTimes(2);
-  expect(mockLeave).toHaveBeenCalledTimes(1);
+    await transition.run(location.href);
+    await transition.dispatch('/path/to/');
+
+    expect(warnSpy.mock.calls.length).toBe(1);
+    expect(mockEnter).toHaveBeenCalledTimes(1);
+    expect(mockLeave).toHaveBeenCalledTimes(1);
+
+    transition.destroy();
+  });
+});
+
+describe('destroy asphalt context', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="content">
+      <ul>
+        <li><a href="/path/to/" id="destroy-test">go to /path/to/</a></li>
+      </ul>
+    </div>`;
+  });
+
+  test('can destroy the context', async (done) => {
+    const transition = asphalt.createContext();
+
+    const mockEnter = jest.fn((payload) => []);
+    const mockLeave = jest.fn((payload) => []);
+
+    transition.default(
+      asphalt.defineScene('test', {
+        enter: mockEnter,
+        leave: mockLeave
+      })
+    );
+
+    await transition.run(window.location.href);
+
+    transition.destroy();
+
+    // the destroyed context cannot re-run
+    expect(() => {
+      transition.run();
+    }).toThrow();
+
+    // the destroyed context connot dispatch
+    expect(() => {
+      transition.dispatch('/path/to/');
+    }).toThrow();
+
+    // the destroyed context don't listen events
+    const a = document.getElementById('destroy-test');
+    const clickHandler = (evt) => {
+      evt.preventDefault();
+    };
+    a.addEventListener('click', clickHandler);
+    a.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true
+      })
+    );
+    a.removeEventListener('click', clickHandler);
+
+    setTimeout(() => {
+      expect(mockEnter).toHaveBeenCalledTimes(1);
+      expect(mockLeave).toHaveBeenCalledTimes(0);
+
+      done();
+    }, 1000);
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+});
+
+describe('misc', () => {
+  test('routingContext', async () => {
+    const transition = asphalt.createContext({
+      ignoreHash: false
+    });
+
+    const mockEnter = jest.fn((payload) => []);
+    const mockLeave = jest.fn((payload) => []);
+
+    const scene = asphalt.defineScene('test', {
+      enter: mockEnter,
+      leave: mockLeave
+    });
+
+    transition.registerScene('/', scene);
+    transition.registerScene('/:path/:to/', scene);
+
+    await transition.run(window.location.href);
+    await transition.dispatch('/path/to/?query=value&query2=a&query2=b#hash');
+
+    expect(mockEnter.mock.calls[0][0].routingContext).toEqual({
+      name: 'test',
+      params: {},
+      query: {},
+      urlProps: {
+        href: 'http://localhost/',
+        protocol: 'http:',
+        host: 'localhost',
+        hostname: 'localhost',
+        port: '',
+        pathname: '/',
+        search: '',
+        hash: ''
+      },
+      shouldPushState: false
+    });
+
+    expect(mockEnter.mock.calls[1][0].routingContext).toEqual({
+      name: 'test',
+      params: {
+        path: 'path',
+        to: 'to'
+      },
+      query: {
+        query: 'value',
+        query2: ['a', 'b']
+      },
+      urlProps: {
+        href: 'http://localhost/path/to/?query=value&query2=a&query2=b#hash',
+        protocol: 'http:',
+        host: 'localhost',
+        hostname: 'localhost',
+        port: '',
+        pathname: '/path/to/',
+        search: '?query=value&query2=a&query2=b',
+        hash: '#hash'
+      },
+      shouldPushState: true
+    });
+  });
 });
