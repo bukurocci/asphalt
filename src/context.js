@@ -31,6 +31,7 @@ const createContext = (userOptions) => {
     const scheduler = createScheduler();
     const running = false;
     const queuedURLState = null;
+    const here = null;
     const defaultSceneFactory = warningNoDefault;
 
     return {
@@ -39,6 +40,7 @@ const createContext = (userOptions) => {
       scheduler,
       defaultSceneFactory,
       state: {
+        here,
         queuedURLState,
         running
       }
@@ -68,7 +70,7 @@ const createContext = (userOptions) => {
 
     return (
       isSameOrigin(fromProps.href, toProps.href) && // 同一オリジンのチェック
-      options.denyDispatchRule.every((rule) => rule(fromProps, toProps, target)) && // ユーザーが定義した無視条件のチェック
+      !options.denyDispatchRule.some((rule) => rule(fromProps, toProps, target)) && // ユーザーが定義した無視条件のチェック
       (target == null || isImplicitQualifiedTarget(target))
     ); // aタグのclickイベントから実行しようとしている場合はaタグをチェック
   };
@@ -85,7 +87,7 @@ const createContext = (userOptions) => {
       return;
     }
 
-    const fromProps = history.state;
+    const fromProps = state.here;
 
     if (!allowsDispatch(fromProps, toProps, null)) {
       return;
@@ -101,7 +103,7 @@ const createContext = (userOptions) => {
       return;
     }
 
-    const fromProps = decomposeURL(location.href);
+    const fromProps = state.here;
     const toProps = decomposeURL(target.href);
 
     if (!allowsDispatch(fromProps, toProps, target)) {
@@ -144,13 +146,15 @@ const createContext = (userOptions) => {
 
     bindEvents();
 
-    dispatch(decomposeURL(href), false);
+    return dispatch(decomposeURL(href), false);
   };
 
   const dispatch = (props, usePushState = true) => {
     if (scheduler.busy) {
       return;
     }
+
+    state.here = props;
 
     const { callback, params } = router.findMatched(props.pathname) || {
       callback: context.defaultSceneFactory,
@@ -170,23 +174,29 @@ const createContext = (userOptions) => {
       shouldPushState: usePushState
     };
 
-    scheduler.exec(scene, plugins, routingContext).then(() => {
+    return scheduler.exec(scene, plugins, routingContext).then(async () => {
       if (state.queuedURLState) {
-        dispatch(state.queuedURLState, false);
+        const urlState = state.queuedURLState;
         state.queuedURLState = null;
+        await dispatch(urlState, false);
       }
     });
   };
 
   const manuallyDispatch = (href) => {
-    const fromProps = decomposeURL(location.href);
+    const fromProps = state.here;
     const toProps = decomposeURL(href);
 
     if (!allowsDispatch(fromProps, toProps, null)) {
       return;
     }
 
-    dispatch(toProps, true);
+    // 遷移先と現在地が同じ場合はページ移動をキャンセルして何もしない
+    if (toProps.href === fromProps.href) {
+      return;
+    }
+
+    return dispatch(toProps, true);
   };
 
   const registerDefault = (sceneFactory) => {
