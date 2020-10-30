@@ -1,5 +1,5 @@
 # asphalt.js
-An scene-based transitions helper  
+A scene-based transitions helper  
 this is under development now
 
 # TODO
